@@ -450,6 +450,8 @@ function get_protection(shit,bone_id,k_ap)
 	if total_prot > limiter then
 		total_prot = limiter
 	end
+	
+	return total_prot
 end
 
 local pba = perk_based_artefacts
