@@ -664,31 +664,26 @@ function ui_inventory.UIInventory:UpdateStats(full_stats)
 		dummy_hit.draftsman 			= db.actor
 		
 		dummy_hit.type = hit.burn
-		self.stat_outfit["fire"]  = grok_actor_damage_balancer.get_protection(dummy_hit,2,5) or 0
+		self.stat_outfit["fire"]  = grok_actor_damage_balancer.get_armor_protection(dummy_hit) or 0
 		
 		dummy_hit.type = hit.shock
-		self.stat_outfit["shock"] = grok_actor_damage_balancer.get_protection(dummy_hit,2,5) or 0
+		self.stat_outfit["shock"] = grok_actor_damage_balancer.get_armor_protection(dummy_hit) or 0
 		
 		dummy_hit.type = hit.chemical_burn
-		self.stat_outfit["acid"]  = grok_actor_damage_balancer.get_protection(dummy_hit,2,5) or 0
+		self.stat_outfit["acid"]  = grok_actor_damage_balancer.get_armor_protection(dummy_hit) or 0
 		
 		self.stat_outfit["radia"] = c_outfit:GetDefHitTypeProtection( HitTypeID["Radiation"]    ) or 0
 		
 		dummy_hit.type = hit.telepatic
-		self.stat_outfit["psi"]   =  grok_actor_damage_balancer.get_protection(dummy_hit,2,5) or 0
+		self.stat_outfit["psi"]   =  grok_actor_damage_balancer.get_armor_protection(dummy_hit) or 0
 		
 		dummy_hit.type = hit.wound
-		self.stat_outfit["wound"] =  grok_actor_damage_balancer.get_protection(dummy_hit,2,5) or 0
+		self.stat_outfit["wound"] =  grok_actor_damage_balancer.get_armor_protection(dummy_hit) or 0
 		
 		self.stat_outfit["power"] = (c_outfit.m_fPowerRestoreSpeed or 0) * cond
-
-		local bone_value = c_outfit:GetBoneArmor( BoneID["bip01_spine"] ) or 0
-		if (not c_outfit.bIsHelmetAvaliable) then
-			bone_value = bone_value + c_outfit:GetBoneArmor( BoneID["bip01_head"] ) or 0
-		end
 		
 		dummy_hit.type = hit.fire_wound
-		self.stat_outfit["fire_wound"] = grok_actor_damage_balancer.get_protection(dummy_hit,2,5) or 0
+		self.stat_outfit["fire_wound"] = grok_actor_damage_balancer.get_armor_protection(dummy_hit) or 0
 	end
 	
 -- Helmet
@@ -706,28 +701,33 @@ function ui_inventory.UIInventory:UpdateStats(full_stats)
 		local id = helm:id()
 		local cond = math.max(smallest(), helm:condition())
 		
-		-- By jerkonov info
-		-- Elemental resists are 10 times weaker for outfits and helmets
-		-- The psy damage is hijacked in arszi_psy.script so they dont have an engine factor
-		-- Leave psy damage as is
-		self.stat_helm["fire"]  = (c_helm:GetDefHitTypeProtection( HitTypeID["Burn"]         ) or 0) * (settings.use_game_values ~= "none" and 0.1 or 1) * (full_stats and 1 / cond or 1)
-		self.stat_helm["shock"] = (c_helm:GetDefHitTypeProtection( HitTypeID["Shock"]        ) or 0) * (settings.use_game_values ~= "none" and 0.1 or 1) * (full_stats and 1 / cond or 1)
-		self.stat_helm["acid"]  = (c_helm:GetDefHitTypeProtection( HitTypeID["ChemicalBurn"] ) or 0) * (settings.use_game_values ~= "none" and 0.1 or 1) * (full_stats and 1 / cond or 1)
-		self.stat_helm["radia"] = (c_helm:GetDefHitTypeProtection( HitTypeID["Radiation"]    ) or 0) * (settings.use_game_values ~= "none" and 0.1 or 1) * (full_stats and 1 / cond or 1)
-		-- self.stat_helm["psi"]   = (c_helm:GetDefHitTypeProtection( HitTypeID["Telepatic"]    ) or 0) * (settings.use_game_values ~= "none" and 0.1 or 1) * (full_stats and 1 / cond or 1)
-		-- self.stat_helm["wound"] = (c_helm:GetDefHitTypeProtection( HitTypeID["Wound"]        ) or 0) * (full_stats and 1 / cond or 1)
+		local dummy_hit 			= hit()
+		dummy_hit.power 				= 0.1
+		dummy_hit.direction 			= vector():set( 0, 0, 0 )
+		dummy_hit.impulse 			= 0
+		dummy_hit.draftsman 			= db.actor
 
-		-- self.stat_helm["fire"]  = (c_helm:GetDefHitTypeProtection( HitTypeID["Burn"]         ) or 0) * (full_stats and 1 / cond or 1)
-		-- self.stat_helm["shock"] = (c_helm:GetDefHitTypeProtection( HitTypeID["Shock"]        ) or 0) * (full_stats and 1 / cond or 1)
-		-- self.stat_helm["acid"]  = (c_helm:GetDefHitTypeProtection( HitTypeID["ChemicalBurn"] ) or 0) * (full_stats and 1 / cond or 1)
-		-- self.stat_helm["radia"] = (c_helm:GetDefHitTypeProtection( HitTypeID["Radiation"]    ) or 0) * (full_stats and 1 / cond or 1)
-		self.stat_helm["psi"]   = (c_helm:GetDefHitTypeProtection( HitTypeID["Telepatic"]    ) or 0) * (full_stats and 1 / cond or 1)
-		self.stat_helm["wound"] = (c_helm:GetDefHitTypeProtection( HitTypeID["Wound"]        ) or 0) * (full_stats and 1 / cond or 1)
-
+		dummy_hit.type = hit.burn
+		self.stat_helm["fire"]  = grok_actor_damage_balancer.get_helmet_protection(dummy_hit) or 0
+		
+		dummy_hit.type = hit.shock
+		self.stat_helm["shock"] = grok_actor_damage_balancer.get_helmet_protection(dummy_hit) or 0
+		
+		dummy_hit.type = hit.chemical_burn
+		self.stat_helm["acid"]  = grok_actor_damage_balancer.get_helmet_protection(dummy_hit) or 0
+		
+		self.stat_helm["radia"] = c_outfit:GetDefHitTypeProtection( HitTypeID["Radiation"]    ) or 0
+		
+		dummy_hit.type = hit.telepatic
+		self.stat_helm["psi"]   =  grok_actor_damage_balancer.get_helmet_protection(dummy_hit) or 0
+		
+		dummy_hit.type = hit.wound
+		self.stat_helm["wound"] =  grok_actor_damage_balancer.get_helmet_protection(dummy_hit) or 0
+		
 		self.stat_helm["power"] = (c_helm.m_fPowerRestoreSpeed or 0) * (full_stats and 1 or cond)
-
-		local bone_value = c_helm:GetBoneArmor( BoneID["bip01_head"] ) or 0
-		self.stat_helm["fire_wound"] = bone_value * (full_stats and 1 or cond)
+		
+		dummy_hit.type = hit.fire_wound
+		self.stat_helm["fire_wound"] = grok_actor_damage_balancer.get_helmet_protection(dummy_hit) or 0
 	end
 	
 -- Artefacts
@@ -740,18 +740,37 @@ function ui_inventory.UIInventory:UpdateStats(full_stats)
 	actor:iterate_belt( function(owner, obj)
 		local sec = obj:section()
 		local cond = math.max(smallest(), obj:condition())
+
+		local dummy_hit 			= hit()
+		dummy_hit.power 				= 0.1
+		dummy_hit.direction 			= vector():set( 0, 0, 0 )
+		dummy_hit.impulse 			= 0
+		dummy_hit.draftsman 			= db.actor
+
+		dummy_hit.type = hit.burn
+		self.stat_arty["fire"]  = grok_actor_damage_balancer.get_single_artefact_protection(dummy_hit) or 0
+		
+		dummy_hit.type = hit.shock
+		self.stat_arty["shock"] = grok_actor_damage_balancer.get_single_artefact_protection(dummy_hit) or 0
+		
+		dummy_hit.type = hit.chemical_burn
+		self.stat_arty["acid"]  = grok_actor_damage_balancer.get_single_artefact_protection(dummy_hit) or 0
+		
+		dummy_hit.type = hit.telepatic
+		self.stat_arty["psi"]   =  grok_actor_damage_balancer.get_single_artefact_protection(dummy_hit) or 0
+		
+		dummy_hit.type = hit.wound
+		self.stat_arty["wound"] =  grok_actor_damage_balancer.get_single_artefact_protection(dummy_hit) or 0
+		
+		dummy_hit.type = hit.fire_wound
+		self.stat_arty["fire_wound"] = grok_actor_damage_balancer.get_single_artefact_protection(dummy_hit) or 0
+		
 		local immunities_sec = SYS_GetParam(0,obj:section(),"hit_absorbation_sect")
 		self.stat_arty["health_restore"] = self.stat_arty["health_restore"] + ( (full_stats and 1 or cond) * SYS_GetParam(2, sec, "health_restore_speed", 0) )
 		self.stat_arty["radia_restore"]  = self.stat_arty["radia_restore"]  + ( (full_stats and 1 or cond) * SYS_GetParam(2, sec, "radiation_restore_speed", 0) )
 		
 		self.stat_arty["power"]      = self.stat_arty["power"]      + ( (full_stats and 1 or cond) * SYS_GetParam(2, sec, "power_restore_speed", 0) )
 		self.stat_arty["radia"]      = self.stat_arty["radia"]      + ( (full_stats and 1 or cond) * SYS_GetParam(2, immunities_sec, "radiation_immunity", 0) )
-		self.stat_arty["acid"]       = self.stat_arty["acid"]       + ( (full_stats and 1 or cond) * SYS_GetParam(2, immunities_sec, "chemical_burn_immunity", 0) )
-		self.stat_arty["shock"]      = self.stat_arty["shock"]      + ( (full_stats and 1 or cond) * SYS_GetParam(2, immunities_sec, "shock_immunity", 0) )
-		self.stat_arty["fire"]       = self.stat_arty["fire"]       + ( (full_stats and 1 or cond) * SYS_GetParam(2, immunities_sec, "burn_immunity", 0) )
-		self.stat_arty["psi"]        = self.stat_arty["psi"]        + ( (full_stats and 1 or cond) * SYS_GetParam(2, immunities_sec, "telepatic_immunity", 0) )
-		self.stat_arty["wound"]      = self.stat_arty["wound"]      + ( (full_stats and 1 or cond) * SYS_GetParam(2, immunities_sec, "wound_immunity", 0) )
-		self.stat_arty["fire_wound"] = self.stat_arty["fire_wound"] + ( (full_stats and 1 or cond) * SYS_GetParam(2, immunities_sec, "fire_wound_immunity", 0) )
 	end)
 	
 -- Boosters
